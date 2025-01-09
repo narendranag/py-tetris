@@ -87,6 +87,23 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+                elif event.key == pygame.K_LEFT:
+                    # Move left
+                    if tetromino_position[0] > 0:
+                        tetromino_position[0] -= 1
+                elif event.key == pygame.K_RIGHT:
+                    # Move right
+                    if tetromino_position[0] < GRID_WIDTH - len(current_tetromino[0]):
+                        tetromino_position[0] += 1
+                elif event.key == pygame.K_DOWN:
+                    # Move down
+                    if tetromino_position[1] < GRID_HEIGHT - len(current_tetromino):
+                        tetromino_position[1] += 1
+    
+
         # Fill the screen with black
         screen.fill((0, 0, 0))
 
