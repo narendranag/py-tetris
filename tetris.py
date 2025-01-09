@@ -9,6 +9,12 @@ CELL_SIZE = 30 # Size of each cell in pixels
 # Fall interval in milliseconds
 FALL_SPEED = 500 # Tetromino falls every 500 milliseconds
 
+# Grid to track locked blocks
+def create_locked_grid():
+    return [[0 for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
+
+locked_grid = create_locked_grid()
+
 # Tetromino shapes
 SHAPES = {
     "I": [
@@ -59,10 +65,15 @@ clock = pygame.time.Clock()
 # Iterate over each column (x) and row (y) and draw a rectangle for each cell
 # The rectangle is drawn with a 1 pixel border
 def draw_grid():
-    for x in range(0, GRID_WIDTH * CELL_SIZE, CELL_SIZE):
-        for y in range(0, GRID_HEIGHT * CELL_SIZE, CELL_SIZE):
-            rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
-            pygame.draw.rect(screen, (40, 40, 40), rect, 1) # Gray grid lines
+    for y in range(GRID_HEIGHT):
+        for x in range(GRID_WIDTH):
+            if locked_grid[y][x]:
+                rect = pygame.Rect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                pygame.draw.rect(screen, locked_grid[y][x], rect)  # Fill with the block color
+                pygame.draw.rect(screen, (0, 0, 0), rect, 1)  # Add a border
+            else:
+                rect = pygame.Rect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                pygame.draw.rect(screen, (40, 40, 40), rect, 1)  # Draw empty grid lines
 
 # Function to draw a tetromino
 # The tetromino is drawn by iterating over each cell in the shape and drawing a rectangle
@@ -75,6 +86,31 @@ def draw_tetromino(shape, position, color):
                 rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
                 pygame.draw.rect(screen, color, rect) # Fill the cell
                 pygame.draw.rect(screen, (0, 0, 0), rect, 1) # Draw a 1 pixel border
+
+
+# Function to lock a tetromino in place
+# This function takes the current tetromino, its position, and color
+
+def lock_tetromino(shape, position, color):
+    for row_index, row in enumerate(shape):
+        for col_index, cell in enumerate(row):
+            if cell:
+                y = position[1] + row_index
+                x = position[0] + col_index
+                if 0 <= x < GRID_WIDTH and 0 <= y < GRID_HEIGHT:
+                    locked_grid[y][x] = color
+
+# Function to check for collisions
+def collision_with_locked_blocks():
+    for row_index, row in enumerate(current_tetromino):
+        for col_index, cell in enumerate(row):
+            if cell:
+                y = tetromino_position[1] + row_index
+                x = tetromino_position[0] + col_index
+                if 0 <= x < GRID_WIDTH and 0 <= y < GRID_HEIGHT:
+                    if locked_grid[y][x]:
+                        return True
+    return False
 
 # Main game loop
 def main():
@@ -115,7 +151,10 @@ def main():
             if tetromino_position[1] < GRID_HEIGHT - len(current_tetromino):
                 tetromino_position[1] += 1
             else:
-                # Reset the tetromino position
+                # Lock the Tetromino
+                lock_tetromino(current_tetromino, tetromino_position, tetromino_color)
+                # Spawn a new Tetromino
+                current_tetromino = SHAPES['T']  # For now, just respawn the same shape
                 tetromino_position = [4, 0]
             
             last_fall_time = current_time
