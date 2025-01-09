@@ -96,7 +96,7 @@ def main():
                         tetromino_position[0] -= 1
                 elif event.key == pygame.K_RIGHT:
                     # Move right
-                    if tetromino_position[0] < GRID_WIDTH - len(current_tetromino[0]):
+                    if tetromino_position[0] <= GRID_WIDTH - len(current_tetromino[0]):
                         tetromino_position[0] += 1
                 elif event.key == pygame.K_DOWN:
                     # Move down
