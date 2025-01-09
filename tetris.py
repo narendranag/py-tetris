@@ -6,6 +6,37 @@ GRID_WIDTH = 10 # Number of columns
 GRID_HEIGHT = 20 # Number of rows
 CELL_SIZE = 30 # Size of each cell in pixels
 
+# Tetromino shapes
+SHAPES = {
+    "I": [
+        [(0, 0), (1, 0), (2, 0), (3, 0)], # Horizontal
+        [(0, 0), (0, 1), (0, 2), (0, 3)]  # Vertical
+    ],
+    "O": [
+        [(0, 0), (1, 0), (0, 1), (1, 1)] # Square
+    ],
+    "T": [
+        [(1, 0), (0, 1), (1, 1), (2, 1)], # T-shape
+        [(1, 0), (0, 1), (1, 1), (1, 2)], # T-shape rotated
+        [(0, 1), (1, 1), (2, 1), (1, 2)], # T-shape rotated
+        [(1, 0), (1, 1), (0, 2), (1, 2)]  # T-shape rotated
+    ],
+    "S": [
+        [(1, 0), (2, 0), (0, 1), (1, 1)], # S-shape
+        [(0, 0), (0, 1), (1, 1), (1, 2)]  # S-shape rotated
+    ],
+    "Z": [
+        [(0, 0), (1, 0), (1, 1), (2, 1)], # Z-shape
+        [(1, 0), (0, 1), (1, 1), (0, 2)]  # Z-shape rotated
+    ],
+    "J": [
+        [(0, 0), (0, 1), (1, 1), (2, 1)], # J-shape
+        [(1, 0), (2, 0), (1, 1), (1, 2)], # J-shape rotated
+        [(0, 1), (1, 1), (2, 1), (2, 2)], # J-shape rotated
+        [(1, 0), (1, 1), (0, 2), (1, 2)]  # J-shape rotated
+    ],
+}
+
 # Intialize pygame
 pygame.init()
 
@@ -30,9 +61,27 @@ def draw_grid():
             rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
             pygame.draw.rect(screen, (40, 40, 40), rect, 1) # Gray grid lines
 
+# Function to draw a tetromino
+# The tetromino is drawn by iterating over each cell in the shape and drawing a rectangle
+def draw_tetromino(shape, position, color):
+    for row_index, row in enumerate(shape):
+        for col_index, cell in enumerate(row):
+            if cell: # Only draw the cell if the value is not 0
+                x = (position[0] + col_index) * CELL_SIZE
+                y = (position[1] + row_index) * CELL_SIZE
+                rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
+                pygame.draw.rect(screen, color, rect) # Fill the cell
+                pygame.draw.rect(screen, (0, 0, 0), rect, 1) # Draw a 1 pixel border
+
 # Main game loop
 def main():
     running = True
+
+    # Example Tetromino
+    current_tetromino = SHAPES["I"][0]
+    tetromino_position = [4, 0]
+    tetromino_color = (128, 0, 128)
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -43,6 +92,9 @@ def main():
 
         # Draw the grid
         draw_grid()
+
+        # Draw the tetromino
+        draw_tetromino(current_tetromino, tetromino_position, tetromino_color)
 
         # Update the display
         pygame.display.flip()
