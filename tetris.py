@@ -6,6 +6,9 @@ GRID_WIDTH = 10 # Number of columns
 GRID_HEIGHT = 20 # Number of rows
 CELL_SIZE = 30 # Size of each cell in pixels
 
+# Fall interval in milliseconds
+FALL_SPEED = 500 # Tetromino falls every 500 milliseconds
+
 # Tetromino shapes
 SHAPES = {
     "I": [
@@ -76,6 +79,7 @@ def draw_tetromino(shape, position, color):
 # Main game loop
 def main():
     running = True
+    last_fall_time = pygame.time.get_ticks()
 
     # Example Tetromino
     current_tetromino = SHAPES["I"][0]
@@ -83,6 +87,8 @@ def main():
     tetromino_color = (128, 0, 128)
 
     while running:
+        current_time = pygame.time.get_ticks()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -103,6 +109,16 @@ def main():
                     if tetromino_position[1] < GRID_HEIGHT - len(current_tetromino):
                         tetromino_position[1] += 1
     
+        # Check if it's time for the tetromino to fall
+        if current_time - last_fall_time > FALL_SPEED:
+            # Move down
+            if tetromino_position[1] < GRID_HEIGHT - len(current_tetromino):
+                tetromino_position[1] += 1
+            else:
+                # Reset the tetromino position
+                tetromino_position = [4, 0]
+            
+            last_fall_time = current_time
 
         # Fill the screen with black
         screen.fill((0, 0, 0))
