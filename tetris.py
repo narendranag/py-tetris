@@ -107,9 +107,8 @@ def collision_with_locked_blocks():
             if cell:
                 y = tetromino_position[1] + row_index
                 x = tetromino_position[0] + col_index
-                if 0 <= x < GRID_WIDTH and 0 <= y < GRID_HEIGHT:
-                    if locked_grid[y][x]:
-                        return True
+                if y >= GRID_HEIGHT or (0 <= y < GRID_HEIGHT and 0 <= x < GRID_WIDTH and locked_grid[y][x]):
+                    return True
     return False
 
 # Main game loop
